@@ -26,17 +26,17 @@ const doesCallRecordingExist = async ({
 const updateCallRecording = async ({
   coreApiClient,
   callRecordingId,
-  fields,
+  updateFields,
 }: {
   coreApiClient: Pick<CoreApiClient, 'mutation'>;
   callRecordingId: string;
-  fields: CallRecordingSyncFields;
+  updateFields: CallRecordingSyncFields;
 }): Promise<void> => {
   await coreApiClient.mutation({
     updateCallRecording: {
       __args: {
         id: callRecordingId,
-        data: fields,
+        data: updateFields,
       },
       id: true,
     },
@@ -46,14 +46,20 @@ const updateCallRecording = async ({
 export const upsertCallRecording = async ({
   coreApiClient,
   callRecordingId,
-  fields,
+  createFields,
+  updateFields,
 }: {
   coreApiClient: Pick<CoreApiClient, 'query' | 'mutation'>;
   callRecordingId: string;
-  fields: CallRecordingSyncFields;
+  createFields: CallRecordingSyncFields;
+  updateFields: CallRecordingSyncFields;
 }): Promise<{ callRecordingId: string; created: boolean }> => {
   if (await doesCallRecordingExist({ coreApiClient, callRecordingId })) {
-    await updateCallRecording({ coreApiClient, callRecordingId, fields });
+    await updateCallRecording({
+      coreApiClient,
+      callRecordingId,
+      updateFields,
+    });
 
     return { callRecordingId, created: false };
   }
@@ -62,7 +68,7 @@ export const upsertCallRecording = async ({
     await coreApiClient.mutation({
       createCallRecording: {
         __args: {
-          data: { id: callRecordingId, ...fields },
+          data: { id: callRecordingId, ...createFields },
         },
         id: true,
       },
@@ -74,7 +80,11 @@ export const upsertCallRecording = async ({
       throw error;
     }
 
-    await updateCallRecording({ coreApiClient, callRecordingId, fields });
+    await updateCallRecording({
+      coreApiClient,
+      callRecordingId,
+      updateFields,
+    });
 
     return { callRecordingId, created: false };
   }
