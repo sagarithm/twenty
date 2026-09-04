@@ -11,6 +11,8 @@ All notable changes to this application are documented in this file.
   clear it to try again.
 - Hold a recording in Processing until its media lands or is settled as
   unavailable, rather than completing it as soon as the transcript arrives.
+- Reconcile the latest seven days of Fathom meetings daily and resume media
+  imports left stale by a missed enqueue, poll, or worker execution.
 
 ## 0.1.0
 
